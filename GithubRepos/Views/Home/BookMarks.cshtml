@@ -1,0 +1,22 @@
+﻿@model GithubRepos.Models.RepositoriesViewModel
+@{
+    ViewData["Title"] = "BookMarks";
+}
+<h5>Bookmarks list:</h5>
+<div class="row">
+
+    @if (Model != null)
+    {
+        @foreach (var item in Model.Repositories)
+        {
+
+            <div class="card m-1 col-sm-3">
+                <img class="avatar" src="@item.Avatar" />
+                <div>@item.Name</div>
+            </div>
+
+        }
+    }
+
+
+</div>

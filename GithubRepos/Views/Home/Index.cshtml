@@ -1,0 +1,104 @@
+﻿@model GithubRepos.Models.RepositoriesViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+<div>
+    <div >
+        <input id="RepoName" type="text" placeholder="Enter Repository Name"/>
+        <input id="search" value="Submit" type="submit"/>
+    </div>
+    <br />
+    <div class="row" id="reposContainer">
+      
+    </div>
+
+</div>
+<script>
+
+
+    $('#search').click(async function()  {
+        var Name = $('#RepoName').val();
+        if (Name == null) {
+            alert("please insert repository name");
+        }
+        // fetch data from github api using fetch js function
+        await fetch("https://api.github.com/search/repositories?q=" + Name)
+            .then(res => res.json())
+            .then(data => {
+                //main container to show all repositories
+                var template = $('#reposContainer').html("");
+               
+
+                for (let i = 0; i < data.total_count; i++) {
+                    //new div as a container for every repository
+                    var newDiv = document.createElement("div");   
+                    newDiv.className = "card m-1 col-sm-3";
+
+                    // set paragraph element that contain repository name
+                    var name = document.createElement("p");
+                    name.innerHTML = data.items[i].name;
+
+                    //set img element that contain avatar imege of repository owner
+                    var img = document.createElement("img");
+                    img.setAttribute('src', "" + data.items[i].owner.avatar_url + "");
+                    img.setAttribute('class', "avatar");
+
+                    //set bookmark button element that contain bookmark b
+                    var bookmark = document.createElement("button");
+                    bookmark.setAttribute('class', 'bookmark btn btn-warning  btn-sm');
+                    var bookmarkicon = document.createElement("i");
+                    bookmarkicon.setAttribute('class', 'icon fa fa-bookmark-o');
+                    bookmarkicon.setAttribute('id', "repoId_" + data.items[i].id + "");
+                    bookmark.appendChild(bookmarkicon);
+                 
+
+                    //put all together elements into new div container
+                    newDiv.append(img, name, bookmark);
+
+                    //item that clicked
+                    var item = data.items[i];
+
+                    //onclick event that catch repository data and added to controller
+                    bookmark.onclick = (function (item) {
+
+                        return function () {
+                            var MarkedRepository = {
+                                id: item.id,
+                                avatar: item.owner.avatar_url,
+                                name:item.name
+                            }
+                            
+                            SaveBookMarks(MarkedRepository);
+                            alert("bookmark added!");
+                            $('#repoId_' + item.id).removeClass();
+                            $('#repoId_' + item.id).addClass('fa fa-bookmark');
+                        };
+                    })(item);
+
+                    var parentDiv = document.querySelector(".row");
+
+                    //append new div element to the parent element (reposContainer)
+
+                    parentDiv.appendChild(newDiv);
+                 
+                }
+
+            })
+            .catch((error) => alert(error))
+
+    })
+    // ajax call to update controller with new bookmark
+    async function SaveBookMarks(bookmark) {
+       
+        $.ajax({
+              url: "@Url.Action("AddBookMarks")",
+              data: bookmark, 
+              type:"POST",
+              success:function(data){
+              
+              }})
+
+    }
+</script>
