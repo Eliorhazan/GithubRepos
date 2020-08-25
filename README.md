@@ -5,7 +5,7 @@ asp .net project that retrieve repositories data from github api and view the co
 the project designed by mvc architecture and store data model inside asp .net session .
 
 
-web app use 2 pages: 
+the web app contain 2 pages: 
 
 
 1)search input field and view content data after form submmited.
